@@ -66,10 +66,17 @@ def c_delta_V(Lp_prob, building_ids, center_ids):
 
 c_delta_V(Lp_prob, building_ids, center_ids)
 
-Lp_prob += center_matrix['A', 'a'] + center_matrix['B', 'b'] + center_matrix['C', 'c'] + center_matrix[
-    'D', 'd'] + p.lpSum(delta_volumes_matrix)
 
-# vysledek
+def objective_function(Lp_prob, building_ids, center_ids):
+    Lp_prob += p.lpSum(
+        center_matrix[building_ids[index], center_ids[index]] for index in range(len(building_ids))) + p.lpSum(
+        delta_volumes_matrix)
+
+
+objective_function(Lp_prob, building_ids, center_ids)
+
+
+# result
 Lp_prob.solve()
 print(Lp_prob)
 
