@@ -39,88 +39,29 @@ Lp_prob += center_matrix['B', 'd'] <= center_matrix['D', 'd']
 Lp_prob += center_matrix['C', 'd'] <= center_matrix['D', 'd']
 
 # CdeltaV
-Lp_prob += delta_volumes_matrix['A', 'a'] >= (heights['A'] - height_center['a']) * footprints['A'] - (
-            1 - center_matrix['A', 'a']) * M['A']
-Lp_prob += delta_volumes_matrix['A', 'a'] >= -(heights['A'] - height_center['a']) * footprints['A'] - (
-            1 - center_matrix['A', 'a']) * M['A']
+def c_delta_V(Lp_prob,building_id,center_id):
+    Lp_prob += delta_volumes_matrix[building_id, center_id] >= (heights[building_id] - height_center[center_id]) * footprints[building_id] - (
+            1 - center_matrix[building_id, center_id]) * M[building_id]
+    Lp_prob += delta_volumes_matrix[building_id, center_id] >= -(heights[building_id] - height_center[center_id]) * footprints[building_id] - (
+            1 - center_matrix[building_id, center_id]) * M[building_id]
 
-Lp_prob += delta_volumes_matrix['B', 'a'] >= (heights['B'] - height_center['a']) * footprints['B'] - (
-            1 - center_matrix['B', 'a']) * M['B']
-Lp_prob += delta_volumes_matrix['B', 'a'] >= -(heights['B'] - height_center['a']) * footprints['B'] - (
-            1 - center_matrix['B', 'a']) * M['B']
+c_delta_V(Lp_prob,'A','a')
+c_delta_V(Lp_prob,'B','a')
+c_delta_V(Lp_prob,'C','a')
+c_delta_V(Lp_prob,'D','a')
+c_delta_V(Lp_prob,'A','b')
+c_delta_V(Lp_prob,'B','b')
+c_delta_V(Lp_prob,'C','b')
+c_delta_V(Lp_prob,'D','b')
+c_delta_V(Lp_prob,'A','c')
+c_delta_V(Lp_prob,'B','c')
+c_delta_V(Lp_prob,'C','c')
+c_delta_V(Lp_prob,'D','c')
+c_delta_V(Lp_prob,'A','d')
+c_delta_V(Lp_prob,'B','d')
+c_delta_V(Lp_prob,'C','d')
+c_delta_V(Lp_prob,'D','d')
 
-Lp_prob += delta_volumes_matrix['C', 'a'] >= (heights['C'] - height_center['a']) * footprints['C'] - (
-            1 - center_matrix['C', 'a']) * M['C']
-Lp_prob += delta_volumes_matrix['C', 'a'] >= -(heights['C'] - height_center['a']) * footprints['C'] - (
-            1 - center_matrix['C', 'a']) * M['C']
-
-Lp_prob += delta_volumes_matrix['D', 'a'] >= (heights['D'] - height_center['a']) * footprints['D'] - (
-            1 - center_matrix['D', 'a']) * M['D']
-Lp_prob += delta_volumes_matrix['D', 'a'] >= -(heights['D'] - height_center['a']) * footprints['D'] - (
-            1 - center_matrix['D', 'a']) * M['D']
-
-
-Lp_prob += delta_volumes_matrix['A', 'b'] >= (heights['A'] - height_center['b']) * footprints['A'] - (
-            1 - center_matrix['A', 'b']) * M['A']
-Lp_prob += delta_volumes_matrix['A', 'b'] >= -(heights['A'] - height_center['b']) * footprints['A'] - (
-            1 - center_matrix['A', 'b']) * M['A']
-
-Lp_prob += delta_volumes_matrix['B', 'b'] >= (heights['B'] - height_center['b']) * footprints['B'] - (
-            1 - center_matrix['B', 'b']) * M['B']
-Lp_prob += delta_volumes_matrix['B', 'b'] >= -(heights['B'] - height_center['b']) * footprints['B'] - (
-            1 - center_matrix['B', 'b']) * M['B']
-
-Lp_prob += delta_volumes_matrix['C', 'b'] >= (heights['C'] - height_center['b']) * footprints['C'] - (
-            1 - center_matrix['C', 'b']) * M['C']
-Lp_prob += delta_volumes_matrix['C', 'b'] >= -(heights['C'] - height_center['b']) * footprints['C'] - (
-            1 - center_matrix['C', 'b']) * M['C']
-
-Lp_prob += delta_volumes_matrix['D', 'b'] >= (heights['D'] - height_center['b']) * footprints['D'] - (
-            1 - center_matrix['D', 'b']) * M['D']
-Lp_prob += delta_volumes_matrix['D', 'b'] >= -(heights['D'] - height_center['b']) * footprints['D'] - (
-            1 - center_matrix['D', 'b']) * M['D']
-
-
-Lp_prob += delta_volumes_matrix['A', 'c'] >= (heights['A'] - height_center['c']) * footprints['A'] - (
-            1 - center_matrix['A', 'c']) * M['A']
-Lp_prob += delta_volumes_matrix['A', 'c'] >= -(heights['A'] - height_center['c']) * footprints['A'] - (
-            1 - center_matrix['A', 'c']) * M['A']
-
-Lp_prob += delta_volumes_matrix['B', 'c'] >= (heights['B'] - height_center['c']) * footprints['B'] - (
-            1 - center_matrix['B', 'c']) * M['B']
-Lp_prob += delta_volumes_matrix['B', 'c'] >= -(heights['B'] - height_center['c']) * footprints['B'] - (
-            1 - center_matrix['B', 'c']) * M['B']
-
-Lp_prob += delta_volumes_matrix['C', 'c'] >= (heights['C'] - height_center['c']) * footprints['C'] - (
-            1 - center_matrix['C', 'c']) * M['C']
-Lp_prob += delta_volumes_matrix['C', 'c'] >= -(heights['C'] - height_center['c']) * footprints['C'] - (
-            1 - center_matrix['C', 'c']) * M['C']
-
-Lp_prob += delta_volumes_matrix['D', 'c'] >= (heights['D'] - height_center['c']) * footprints['D'] - (
-            1 - center_matrix['D', 'c']) * M['D']
-Lp_prob += delta_volumes_matrix['D', 'c'] >= -(heights['D'] - height_center['c']) * footprints['D'] - (
-            1 - center_matrix['D', 'c']) * M['D']
-
-
-Lp_prob += delta_volumes_matrix['A', 'd'] >= (heights['A'] - height_center['d']) * footprints['A'] - (
-            1 - center_matrix['A', 'd']) * M['A']
-Lp_prob += delta_volumes_matrix['A', 'd'] >= -(heights['A'] - height_center['d']) * footprints['A'] - (
-            1 - center_matrix['A', 'd']) * M['A']
-
-Lp_prob += delta_volumes_matrix['B', 'd'] >= (heights['B'] - height_center['d']) * footprints['B'] - (
-            1 - center_matrix['B', 'd']) * M['B']
-Lp_prob += delta_volumes_matrix['B', 'd'] >= -(heights['B'] - height_center['d']) * footprints['B'] - (
-            1 - center_matrix['B', 'd']) * M['B']
-
-Lp_prob += delta_volumes_matrix['C', 'd'] >= (heights['C'] - height_center['d']) * footprints['C'] - (
-            1 - center_matrix['C', 'd']) * M['C']
-Lp_prob += delta_volumes_matrix['C', 'd'] >= -(heights['C'] - height_center['d']) * footprints['C'] - (
-            1 - center_matrix['C', 'd']) * M['C']
-
-Lp_prob += delta_volumes_matrix['D', 'd'] >= (heights['D'] - height_center['d']) * footprints['D'] - (
-            1 - center_matrix['D', 'd']) * M['D']
-Lp_prob += delta_volumes_matrix['D', 'd'] >= -(heights['D'] - height_center['d']) * footprints['D'] - (
-            1 - center_matrix['D', 'd']) * M['D']
 
 Lp_prob+=center_matrix['A','a']+center_matrix['B','b']+center_matrix['C','c']+center_matrix['D','d']+p.lpSum(delta_volumes_matrix)
 
