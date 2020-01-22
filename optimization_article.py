@@ -19,11 +19,20 @@ height_center = p.LpVariable.dicts("height_center", ((j) for j in center_ids), l
 print(height_center)
 
 print(center_matrix)
+
+
 # Cb1
-Lp_prob += center_matrix['A', 'a'] + center_matrix['A', 'b'] + center_matrix['A', 'c'] + center_matrix['A', 'd'] == 1
-Lp_prob += center_matrix['B', 'a'] + center_matrix['B', 'b'] + center_matrix['B', 'c'] + center_matrix['B', 'd'] == 1
-Lp_prob += center_matrix['C', 'a'] + center_matrix['C', 'b'] + center_matrix['C', 'c'] + center_matrix['C', 'd'] == 1
-Lp_prob += center_matrix['D', 'a'] + center_matrix['D', 'b'] + center_matrix['D', 'c'] + center_matrix['D', 'd'] == 1
+def cb1_one_building_id_all_center_ids(Lp_prob, building_id, center_ids):
+    Lp_prob += p.lpSum(center_matrix[building_id, center_id] for center_id in center_ids) == 1
+
+
+def cb1(Lp_prob, building_ids, center_ids):
+    for building_id in building_ids:
+        cb1_one_building_id_all_center_ids(Lp_prob, building_id, center_ids)
+
+
+cb1(Lp_prob, building_ids, center_ids)
+
 
 # Cb2
 Lp_prob += center_matrix['B', 'a'] <= center_matrix['A', 'a']
