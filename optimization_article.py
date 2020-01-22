@@ -35,18 +35,26 @@ cb1(Lp_prob, building_ids, center_ids)
 
 
 # Cb2
-Lp_prob += center_matrix['B', 'a'] <= center_matrix['A', 'a']
-Lp_prob += center_matrix['C', 'a'] <= center_matrix['A', 'a']
-Lp_prob += center_matrix['D', 'a'] <= center_matrix['A', 'a']
-Lp_prob += center_matrix['A', 'b'] <= center_matrix['B', 'b']
-Lp_prob += center_matrix['C', 'b'] <= center_matrix['B', 'b']
-Lp_prob += center_matrix['D', 'b'] <= center_matrix['B', 'b']
-Lp_prob += center_matrix['A', 'c'] <= center_matrix['C', 'c']
-Lp_prob += center_matrix['B', 'c'] <= center_matrix['C', 'c']
-Lp_prob += center_matrix['D', 'c'] <= center_matrix['C', 'c']
-Lp_prob += center_matrix['A', 'd'] <= center_matrix['D', 'd']
-Lp_prob += center_matrix['B', 'd'] <= center_matrix['D', 'd']
-Lp_prob += center_matrix['C', 'd'] <= center_matrix['D', 'd']
+def cb2_two_building_ids_one_center_id(Lp_prob, first_building_id, second_building_id, center_id):
+    Lp_prob += center_matrix[first_building_id, center_id] <= center_matrix[second_building_id, center_id]
+
+
+cb2_two_building_ids_one_center_id(Lp_prob, 'A', 'A', 'a')
+cb2_two_building_ids_one_center_id(Lp_prob, 'B', 'A', 'a')
+cb2_two_building_ids_one_center_id(Lp_prob, 'C', 'A', 'a')
+cb2_two_building_ids_one_center_id(Lp_prob, 'D', 'A', 'a')
+cb2_two_building_ids_one_center_id(Lp_prob, 'A', 'B', 'b')
+cb2_two_building_ids_one_center_id(Lp_prob, 'B', 'B', 'b')
+cb2_two_building_ids_one_center_id(Lp_prob, 'C', 'B', 'b')
+cb2_two_building_ids_one_center_id(Lp_prob, 'D', 'B', 'b')
+cb2_two_building_ids_one_center_id(Lp_prob, 'A', 'C', 'c')
+cb2_two_building_ids_one_center_id(Lp_prob, 'B', 'C', 'c')
+cb2_two_building_ids_one_center_id(Lp_prob, 'C', 'C', 'c')
+cb2_two_building_ids_one_center_id(Lp_prob, 'D', 'C', 'c')
+cb2_two_building_ids_one_center_id(Lp_prob, 'A', 'D', 'd')
+cb2_two_building_ids_one_center_id(Lp_prob, 'B', 'D', 'd')
+cb2_two_building_ids_one_center_id(Lp_prob, 'C', 'D', 'd')
+cb2_two_building_ids_one_center_id(Lp_prob, 'D', 'D', 'd')
 
 
 # CdeltaV
