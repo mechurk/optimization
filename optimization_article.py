@@ -2,11 +2,11 @@ import pulp as p
 
 Lp_prob = p.LpProblem('Problem', p.LpMinimize)
 
-building_ids = ['A', 'B', 'C', 'D']  # v
-center_ids = ['a', 'b', 'c', 'd']  # u
-heights = {'A': 5, 'B': 6, "C": 88, 'D': 83}
-footprints = {'A': 1, 'B': 1, "C": 1, 'D': 1}
-M = {'A': 10000, 'B': 10000, "C": 10000, 'D': 10000}
+building_ids = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I']  # v
+center_ids = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i']  # u
+heights = {'A': 9.5, 'B': 10.1, "C": 12.8, 'D': 9.9, 'E': 10.5, 'F': 13, 'G': 10, 'H': 12.2, 'I': 10.1}
+footprints = {'A': 1, 'B': 1, "C": 1, 'D': 1, 'E': 1, 'F': 1, 'G': 1, 'H': 1, 'I': 1}
+M = {'A': 10000, 'B': 10000, "C": 10000, 'D': 10000, 'E': 10000, 'F': 10000, 'G': 10000, 'H': 10000, 'I': 10000}
 
 # Xuv
 center_matrix = p.LpVariable.dicts("center_matrix", ((i, j) for i in building_ids for j in center_ids), lowBound=0,
