@@ -39,22 +39,13 @@ def cb2_two_building_ids_one_center_id(Lp_prob, first_building_id, second_buildi
     Lp_prob += center_matrix[first_building_id, center_id] <= center_matrix[second_building_id, center_id]
 
 
-cb2_two_building_ids_one_center_id(Lp_prob, 'A', 'A', 'a')
-cb2_two_building_ids_one_center_id(Lp_prob, 'B', 'A', 'a')
-cb2_two_building_ids_one_center_id(Lp_prob, 'C', 'A', 'a')
-cb2_two_building_ids_one_center_id(Lp_prob, 'D', 'A', 'a')
-cb2_two_building_ids_one_center_id(Lp_prob, 'A', 'B', 'b')
-cb2_two_building_ids_one_center_id(Lp_prob, 'B', 'B', 'b')
-cb2_two_building_ids_one_center_id(Lp_prob, 'C', 'B', 'b')
-cb2_two_building_ids_one_center_id(Lp_prob, 'D', 'B', 'b')
-cb2_two_building_ids_one_center_id(Lp_prob, 'A', 'C', 'c')
-cb2_two_building_ids_one_center_id(Lp_prob, 'B', 'C', 'c')
-cb2_two_building_ids_one_center_id(Lp_prob, 'C', 'C', 'c')
-cb2_two_building_ids_one_center_id(Lp_prob, 'D', 'C', 'c')
-cb2_two_building_ids_one_center_id(Lp_prob, 'A', 'D', 'd')
-cb2_two_building_ids_one_center_id(Lp_prob, 'B', 'D', 'd')
-cb2_two_building_ids_one_center_id(Lp_prob, 'C', 'D', 'd')
-cb2_two_building_ids_one_center_id(Lp_prob, 'D', 'D', 'd')
+def cb2(Lp_prob, building_ids, center_ids):
+    for index in (range(len(building_ids))):
+        for first_building_id in building_ids:
+            cb2_two_building_ids_one_center_id(Lp_prob, first_building_id, building_ids[index], center_ids[index])
+
+
+cb2(Lp_prob, building_ids, center_ids)
 
 
 # CdeltaV
