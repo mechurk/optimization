@@ -41,7 +41,7 @@ Lp_prob += center_matrix['C', 'd'] <= center_matrix['D', 'd']
 
 
 # CdeltaV
-def c_delta_V(Lp_prob, building_id, center_id):
+def c_delta_V_one_building_one_center(Lp_prob, building_id, center_id):
     Lp_prob += delta_volumes_matrix[building_id, center_id] >= (heights[building_id] - height_center[center_id]) * \
                footprints[building_id] - (
                        1 - center_matrix[building_id, center_id]) * M[building_id]
@@ -50,9 +50,13 @@ def c_delta_V(Lp_prob, building_id, center_id):
                        1 - center_matrix[building_id, center_id]) * M[building_id]
 
 
-for building_id in building_ids:
-    for center_id in center_ids:
-        c_delta_V(Lp_prob, building_id, center_id)
+def c_delta_V(Lp_prob, building_ids, center_ids):
+    for building_id in building_ids:
+        for center_id in center_ids:
+            c_delta_V_one_building_one_center(Lp_prob, building_id, center_id)
+
+
+c_delta_V(Lp_prob, building_ids, center_ids)
 
 Lp_prob += center_matrix['A', 'a'] + center_matrix['B', 'b'] + center_matrix['C', 'c'] + center_matrix[
     'D', 'd'] + p.lpSum(delta_volumes_matrix)
