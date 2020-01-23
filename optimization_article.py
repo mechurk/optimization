@@ -97,13 +97,21 @@ def cf3(Lp_prob, edges, building_ids, positive_flows):
                     positive_flows[edge] - 1)
 
 
+def cf4(Lp_prob, building_ids, edges, positive_flows):
+    for building_id in building_ids:
+        outcoming_edges = [edge for edge in edges if edge[0] == building_id]
+        Lp_prob += center_matrix[building_id, building_id] + p.lpSum(
+            positive_flows[edge] for edge in outcoming_edges) <= 1
+
+
 cb1(Lp_prob, building_ids, center_ids)
 cb2(Lp_prob, building_ids, center_ids)
 c_delta_V(Lp_prob, building_ids, center_ids)
 objective_function(Lp_prob, building_ids, center_ids)
 cf1(Lp_prob, edges, flows, positive_flows)
 cf2(Lp_prob, flows, building_ids)
-cf3(Lp_prob,edges,building_ids,positive_flows)
+cf3(Lp_prob, edges, building_ids, positive_flows)
+cf4(Lp_prob, building_ids, edges, positive_flows)
 # result
 Lp_prob.solve()
 print(Lp_prob)
