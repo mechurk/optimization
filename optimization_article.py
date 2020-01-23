@@ -90,12 +90,20 @@ def cf2(Lp_prob, flows, building_ids):
             flows[edge] for edge in incoming_edges) <= 1 - center_matrix[building_id, building_id]
 
 
+def cf3(Lp_prob, edges, building_ids, positive_flows):
+    for edge in edges:
+        for building_id in building_ids:
+            Lp_prob += center_matrix[building_id, edge[0]] >= center_matrix[building_id, edge[1]] + (
+                    positive_flows[edge] - 1)
+
+
 cb1(Lp_prob, building_ids, center_ids)
 cb2(Lp_prob, building_ids, center_ids)
 c_delta_V(Lp_prob, building_ids, center_ids)
 objective_function(Lp_prob, building_ids, center_ids)
 cf1(Lp_prob, edges, flows, positive_flows)
 cf2(Lp_prob, flows, building_ids)
+cf3(Lp_prob,edges,building_ids,positive_flows)
 # result
 Lp_prob.solve()
 print(Lp_prob)
