@@ -4,11 +4,14 @@ Lp_prob = p.LpProblem('Problem', p.LpMinimize)
 
 building_ids = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']  # v
 center_ids = building_ids  # u
-heights = {'A': 10, 'B': 10, "C": 17, 'D': 17, 'E': 10, 'F': 10, 'G': 17, 'H': 17}
+heights = {'A': 1, 'B': 1, "C": 1, 'D': 1, 'E': 1, 'F': 1, 'G': 1, 'H': 1}
 footprints = {'A': 1, 'B': 1, "C": 1, 'D': 1, 'E': 1, 'F': 1, 'G': 1, 'H': 1}
-M = {'A': 10000, 'B': 10000, "C": 10000, 'D': 10000, 'E': 10000, 'F': 10000, 'G': 10000, 'H': 10000, }
+M = {'A': 10000, 'B': 10000, "C": 10000, 'D': 10000, 'E': 10000, 'F': 10000, 'G': 10000, 'H': 10000 }
 edges = [('A', 'B'), ('B', 'A'), ('B', 'C'), ('C', 'B'), ('C', 'D'), ('D', 'C'), ('E', 'F'), ('F', 'E'), ('F', 'G'),
          ('G', 'F'), ('G', 'H'), ('H', 'G')]
+
+
+volume_change_weight = 0.1
 building_count = len(building_ids)
 # Xuv
 center_matrix = p.LpVariable.dicts("center_matrix", ((i, j) for i in building_ids for j in center_ids), lowBound=0,
@@ -64,8 +67,9 @@ def c_delta_V(Lp_prob, building_ids, center_ids):
 
 def objective_function(Lp_prob, building_ids, center_ids):
     Lp_prob += p.lpSum(
-        center_matrix[building_ids[index], center_ids[index]] for index in range(len(building_ids))) + p.lpSum(
-        delta_volumes_matrix)
+        center_matrix[building_ids[index], center_ids[index]] for index in
+        range(len(building_ids))) + (volume_change_weight * p.lpSum(
+        delta_volumes_matrix))
 
 
 def printProb(Lp_prob):
