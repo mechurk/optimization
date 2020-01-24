@@ -2,15 +2,16 @@ import pulp as p
 
 Lp_prob = p.LpProblem('Problem', p.LpMinimize)
 
-building_ids = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']  # v
+building_ids = ['A', 'B', 'C', 'D']  # v
 center_ids = building_ids  # u
-heights = {'A': 8, 'B': 8, "C": 15, 'D': 15, 'E': 1, 'F': 1, 'G': 8, 'H': 17}
-footprints = {'A': 10, 'B': 10, "C": 10, 'D': 10, 'E': 10, 'F': 10, 'G': 10, 'H': 10}
-M = {'A': 10000, 'B': 10000, "C": 10000, 'D': 10000, 'E': 10000, 'F': 10000, 'G': 10000, 'H': 10000}
-edges = [('A', 'B'), ('B', 'A'), ('B', 'D'), ('D', 'B'), ('B', 'C'), ('C', 'B'), ('B', 'E'), ('E', 'B'), ('E', 'F'),
-         ('F', 'E'), ('G', 'H'), ('H', 'G'), ('D', 'E'), ('E', 'D'), ('E', 'C'), ('C', 'E'), ('C', 'F'), ('F', 'C')]
+heights = {'A': 8, 'B': 8, "C": 8, 'D': 8}
+footprints = {'A': 10, 'B': 10, "C": 10, 'D': 10}
+M = {'A': 10000, 'B': 10000, "C": 10000, 'D': 10000}
+edges = [('A', 'B'), ('B', 'C'), ('C', 'D'), ('D', 'A'), ('A', 'D'), ('D', 'C'), ('C', 'B'), ('B', 'A'), ('A', 'C'),
+         ('C', 'A'), ('B', 'D'), ('D', 'B')]
 
-volume_change_weight = 0
+roof_types = {'A': 1, 'B': 1, "C": 2, 'D': 2}
+volume_change_weight = 0.1
 building_count = len(building_ids)
 # Xuv
 center_matrix = p.LpVariable.dicts("center_matrix", ((i, j) for i in building_ids for j in center_ids), lowBound=0,
@@ -107,6 +108,26 @@ def cf4(Lp_prob, building_ids, edges, positive_flows):
             positive_flows[edge] for edge in outcoming_edges) <= 1
 
 
+"""
+def ch2(Lp_prob, center_ids, building_ids):
+    for center_id in center_ids:
+        for building_id in building_ids:
+            Lp_prob += center_matrix[center_id, building_id] * (height_center[center_id] - heights[building_id]) >= 0
+
+
+def ch3(Lp_prob, center_ids, building_ids):
+    for center_id in center_ids:
+        for building_id in building_ids:
+            Lp_prob += center_matrix[center_id, building_id] * (heights[building_id] - height_center[center_id]) >= 0
+"""
+
+
+def rooftypes(Lp_prob, center_ids, buiding_ids, roof_types):
+    for center_id in center_ids:
+        for building_id in building_ids:
+            Lp_prob += center_matrix[center_id, building_id] * (roof_types[center_id]-roof_types[building_id]) == 0
+
+
 cb1(Lp_prob, building_ids, center_ids)
 cb2(Lp_prob, building_ids, center_ids)
 c_delta_V(Lp_prob, building_ids, center_ids)
@@ -115,7 +136,9 @@ cf1(Lp_prob, edges, flows, positive_flows)
 cf2(Lp_prob, flows, building_ids)
 cf3(Lp_prob, edges, building_ids, positive_flows)
 cf4(Lp_prob, building_ids, edges, positive_flows)
-# ch2(Lp_prob, building_ids, center_ids)
+# ch2(Lp_prob, center_ids, center_ids)
+# ch3(Lp_prob, center_ids, center_ids)
+rooftypes(Lp_prob, center_ids, building_ids, roof_types)
 
 # result
 Lp_prob.solve()
