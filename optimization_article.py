@@ -4,16 +4,16 @@ Lp_prob = p.LpProblem('Problem', p.LpMinimize)
 
 building_ids = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']  # v
 center_ids = building_ids  # u
-heights = {'A': 10, 'B': 10, "C": 10, 'D':10, 'E':10, 'F': 10, 'G': 10, 'H': 10}
-footprints = {'A': 10, 'B': 10, "C": 10, 'D': 10, 'E': 10, 'F': 10, 'G': 10, 'H': 10}
-M = {'A': 10000, 'B': 10000, "C": 10000, 'D': 10000, 'E': 10000, 'F': 10000, 'G': 10000, 'H': 10000}
+heights = {'A': 10, 'B': 10, "C": 10, 'D':10, 'E':10, 'F': 10, 'G': 10, 'H': 10} #h
+footprints = {'A': 10, 'B': 10, "C": 10, 'D': 10, 'E': 10, 'F': 10, 'G': 10, 'H': 10} #A
+M = {'A': 10000, 'B': 10000, "C": 10000, 'D': 10000, 'E': 10000, 'F': 10000, 'G': 10000, 'H': 10000} #Mvolume
 edges = [('A', 'B'), ('B', 'A'), ('B', 'C'), ('C', 'B'), ('C', 'D'), ('D', 'C'), ('D', 'E'), ('E', 'D'), ('E', 'F'),
-         ('F', 'E'), ('F', 'G'), ('G', 'F')]
+         ('F', 'E'), ('F', 'G'), ('G', 'F')] #edges
 
-roof_types = {'A': 1, 'B': 1, "C": 2.5, 'D': 3, 'E': 2.7, 'F': 8, 'G': 8, 'H': 3}
-roof_volumes= {'A': 10, 'B': 11, "C": 8, 'D':50, 'E': 20, 'F': 8, 'G': 17, 'H':4}
-volume_change_weight = 0.1
-building_count = len(building_ids)
+roof_types = {'A': 1, 'B': 1, "C": 2.5, 'D': 3, 'E': 2.7, 'F': 8, 'G': 8, 'H': 3} #R
+roof_volumes= {'A': 10, 'B': 11, "C": 8, 'D':50, 'E': 20, 'F': 8, 'G': 17, 'H':4} #Vroof
+volume_change_weight = 0.1 # W objective function
+building_count = len(building_ids) #M cf1, cf2
 epsilon_roof_type = 0.6
 epsilon_roof_volume = 5
 
