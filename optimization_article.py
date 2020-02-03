@@ -7,18 +7,21 @@ Lp_prob = p.LpProblem('Problem', p.LpMinimize)
 
 building_ids = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']  # v
 center_ids = building_ids  # u
-heights = {'A': 1, 'B': 2, "C": 3, 'D': 4, 'E': 5, 'F': 6, 'G': 7, 'H':8}  # h
+heights = {'A': 2, 'B': 2, "C": 4, 'D': 2, 'E': 5, 'F': 6, 'G': 22, 'H':32}  # h
 footprints = {'A': 10, 'B': 10, "C": 10, 'D': 10, 'E': 10, 'F': 10, 'G': 10, 'H': 10}  # A
 # M = {'A': 10000, 'B': 10000, "C": 10000, 'D': 10000, 'E': 10000, 'F': 10000, 'G': 10000, 'H': 10000} #Mvolume
 edges = [('A', 'B'), ('B', 'A'), ('B', 'C'), ('C', 'B'), ('C', 'D'), ('D', 'C'), ('D', 'E'), ('E', 'D'), ('E', 'F'),
-         ('F', 'E'), ('F', 'G'), ('G', 'F'), ('G', 'H'), ('H', 'G')]  # edges
+         ('F', 'E'), ('F', 'G'), ('G', 'F'), ('G', 'H'), ('H', 'G')]
+#edges = [['A', 'B'], ['B', 'A'], ['B', 'C'], ['C', 'B'], ['C', 'D'], ['D', 'C'], ['D', 'E'], ['E', 'D'], ['E', 'F'],
+#         ['F', 'E'], ['F', 'G'], ['G', 'F'], ['G', 'H'], ['H', 'G']]  # edges
 
 roof_types = {'A': 1, 'B': 1, "C": 1, 'D': 1, 'E': 1, 'F': 1, 'G': 1, 'H': 1}  # R
 roof_volumes = {'A': 1, 'B': 1, "C": 1, 'D': 1, 'E': 1, 'F': 1, 'G': 1, 'H': 1}  # Vroof
-volume_change_weight = 0.1  # W objective function
+volume_change_weight = 0.01  # W objective function
 building_count = len(building_ids)  # M cf1, cf2
 epsilon_roof_type = 1
 epsilon_roof_volume = 1
+epsilon_height =9
 
 # Xuv
 center_matrix = p.LpVariable.dicts("center_matrix", ((i, j) for i in building_ids for j in center_ids), lowBound=0,
@@ -201,13 +204,21 @@ def calculate_M_vo_volume(bld_nb, height, footprints):
 
 
 def cp1_one_building_one_center(Lp_prob, building_id, center_id):
-    Lp_prob += (delta_volumes_matrix[center_id, building_id])*(1/(footprints[building_id])) <= 10000
+    Lp_prob += (delta_volumes_matrix[center_id, building_id])*(1/(footprints[building_id])) <= 3
 
 
 def cp1(Lp_prob, building_ids, center_ids):
     for building_id in building_ids:
         for center_id in center_ids:
             cp1_one_building_one_center(Lp_prob, building_id, center_id)
+
+def hard_height(Lp_prob, center_ids, buiding_ids, heights):
+    for center_id in center_ids:
+        for building_id in building_ids:
+            Lp_prob += center_matrix[center_id, building_id] * (
+                    heights[center_id] - heights[building_id]) <= epsilon_height
+            Lp_prob += center_matrix[center_id, building_id] * (
+                    heights[center_id] - heights[building_id]) >= -epsilon_height
 
 M = calculate_M_vo_volume(edges, heights, footprints)
 cb1(Lp_prob, building_ids, center_ids)
@@ -222,7 +233,8 @@ cf4(Lp_prob, building_ids, edges, positive_flows)
 # ch3(Lp_prob, center_ids, center_ids)
 rooftypes(Lp_prob, center_ids, building_ids, roof_types)
 roofvolumes(Lp_prob, center_ids, building_ids, roof_volumes)
-cp1(Lp_prob,building_ids,center_ids)
+#cp1(Lp_prob,building_ids,center_ids)
+hard_height(Lp_prob,center_ids,building_ids,heights)
 # result
 Lp_prob.solve()
 print(Lp_prob)
