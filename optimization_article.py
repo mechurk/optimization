@@ -9,20 +9,21 @@ building_ids = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']  # v
 center_ids = building_ids  # u
 heights = {'A': 2, 'B': 2, "C": 4, 'D': 2, 'E': 5, 'F': 6, 'G': 22, 'H':32}  # h
 footprints = {'A': 10, 'B': 10, "C": 10, 'D': 10, 'E': 10, 'F': 10, 'G': 10, 'H': 10}  # A
-# M = {'A': 10000, 'B': 10000, "C": 10000, 'D': 10000, 'E': 10000, 'F': 10000, 'G': 10000, 'H': 10000} #Mvolume
+MR = {'A': 10000, 'B': 10000, "C": 10000, 'D': 10000, 'E': 10000, 'F': 10000, 'G': 10000, 'H': 10000} #Mvolume
 edges = [('A', 'B'), ('B', 'A'), ('B', 'C'), ('C', 'B'), ('C', 'D'), ('D', 'C'), ('D', 'E'), ('E', 'D'), ('E', 'F'),
          ('F', 'E'), ('F', 'G'), ('G', 'F'), ('G', 'H'), ('H', 'G')]
 #edges = [['A', 'B'], ['B', 'A'], ['B', 'C'], ['C', 'B'], ['C', 'D'], ['D', 'C'], ['D', 'E'], ['E', 'D'], ['E', 'F'],
 #         ['F', 'E'], ['F', 'G'], ['G', 'F'], ['G', 'H'], ['H', 'G']]  # edges
 
 roof_types = {'A': 1, 'B': 1, "C": 1, 'D': 1, 'E': 1, 'F': 1, 'G': 1, 'H': 1}  # R
-roof_volumes = {'A': 1, 'B': 1, "C": 1, 'D': 1, 'E': 1, 'F': 1, 'G': 1, 'H': 1}  # Vroof
+roof_volumes = {'A': 1, 'B': 1, "C": 1, 'D': 1, 'E': 1, 'F': 1, 'G': 1, 'H': 1} # Vroof
+roof_heights = {'A': 2, 'B': 1, "C": 1, 'D': 1, 'E': 1, 'F': 1, 'G': 1, 'H': 1}
 volume_change_weight = 0.01  # W objective function
 building_count = len(building_ids)  # M cf1, cf2
 epsilon_roof_type = 1
 epsilon_roof_volume = 1
 epsilon_height =9
-
+roof_height_change_weight=0.01
 # Xuv
 center_matrix = p.LpVariable.dicts("center_matrix", ((i, j) for i in building_ids for j in center_ids), lowBound=0,
                                    upBound=1, cat='Binary')
@@ -39,6 +40,13 @@ flows = p.LpVariable.dicts("flows", ((j) for j in edges), lowBound=0)
 positive_flows = p.LpVariable.dicts("positive_flows", ((j) for j in edges), lowBound=0, upBound=1, cat='Binary')
 print(flows)
 print(positive_flows)
+
+# delta_h_roof
+delta_roofs_heights_matrix = p.LpVariable.dicts("delta_roofs_heights_matrix", ((i, j) for i in building_ids for j in center_ids),
+                                          lowBound=0)
+
+# Hu
+roofs_height_center = p.LpVariable.dicts("roofs_height_center", ((j) for j in center_ids), lowBound=0)
 
 
 def cb1_one_building_id_all_center_ids(Lp_prob, building_id, center_ids):
@@ -75,11 +83,14 @@ def c_delta_V(Lp_prob, building_ids, center_ids):
             c_delta_V_one_building_one_center(Lp_prob, building_id, center_id)
 
 
+
+
 def objective_function(Lp_prob, building_ids, center_ids):
     Lp_prob += p.lpSum(
         center_matrix[center_ids[index], building_ids[index]] for index in
         range(len(building_ids))) + (volume_change_weight * p.lpSum(
-        delta_volumes_matrix))
+        delta_volumes_matrix))+(roof_height_change_weight * p.lpSum(
+        delta_roofs_heights_matrix))
 
 
 def printProb(Lp_prob):
@@ -220,6 +231,18 @@ def hard_height(Lp_prob, center_ids, buiding_ids, heights):
             Lp_prob += center_matrix[center_id, building_id] * (
                     heights[center_id] - heights[building_id]) >= -epsilon_height
 
+def delta_h_roof_one_building_one_center(Lp_prob, building_id, center_id):
+    Lp_prob += delta_roofs_heights_matrix[center_id, building_id] >= (roof_heights[building_id] - roofs_height_center[center_id]) - (
+                       1 - center_matrix[center_id, building_id]) * MR[building_id]
+    Lp_prob += delta_roofs_heights_matrix[center_id, building_id] >= -(roof_heights[building_id] - roofs_height_center[center_id]) - (
+                       1 - center_matrix[center_id, building_id]) * MR[building_id]
+
+
+def delta_h_roof(Lp_prob, building_ids, center_ids):
+    for building_id in building_ids:
+        for center_id in center_ids:
+            delta_h_roof_one_building_one_center(Lp_prob, building_id, center_id)
+
 M = calculate_M_vo_volume(edges, heights, footprints)
 cb1(Lp_prob, building_ids, center_ids)
 cb2(Lp_prob, building_ids, center_ids)
@@ -235,6 +258,7 @@ rooftypes(Lp_prob, center_ids, building_ids, roof_types)
 roofvolumes(Lp_prob, center_ids, building_ids, roof_volumes)
 #cp1(Lp_prob,building_ids,center_ids)
 hard_height(Lp_prob,center_ids,building_ids,heights)
+delta_h_roof(Lp_prob,building_ids,center_ids)
 # result
 Lp_prob.solve()
 print(Lp_prob)
