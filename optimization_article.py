@@ -18,12 +18,14 @@ edges = [('A', 'B'), ('B', 'A'), ('B', 'C'), ('C', 'B'), ('C', 'D'), ('D', 'C'),
 roof_types = {'A': 1, 'B': 1, "C": 1, 'D': 1, 'E': 1, 'F': 1, 'G': 1, 'H': 1}  # R
 roof_volumes = {'A': 1, 'B': 1, "C": 1, 'D': 1, 'E': 1, 'F': 1, 'G': 1, 'H': 1}  # Vroof
 roof_heights = {'A': 0, 'B': 8, "C": 4, 'D': 2, 'E': 1, 'F': 1, 'G': 1, 'H': 1}
+volume_parameter = {'A': 1, 'B': 1, "C": 1, 'D': 1, 'E': 1, 'F': 1, 'G': 1, 'H': 1}
+roof_orientation = {'A': 1, 'B': 1, "C": 1, 'D': 1, 'E': 1, 'F': 1, 'G': 1, 'H': 1}
 
 volume_change_weight = 0.01  # W objective function
 roof_height_change_weight = 0.1  # WR objective function
 building_count = len(building_ids)  # M cf1, cf2
 epsilon_roof_type = 1
-epsilon_roof_volume = 1
+epsilon_roof_orientation = 1
 epsilon_roof_height = 11
 epsilon_height = 9
 
@@ -44,10 +46,10 @@ positive_flows = p.LpVariable.dicts("positive_flows", ((j) for j in edges), lowB
 print(flows)
 print(positive_flows)
 
-# delta_h_roof
-delta_roofs_heights_matrix = p.LpVariable.dicts("delta_roofs_heights_matrix",
-                                                ((i, j) for i in building_ids for j in center_ids),
-                                                lowBound=0)
+# delta_v_roof
+delta_roofs_volume_matrix = p.LpVariable.dicts("delta_roofs_heights_matrix",
+                                               ((i, j) for i in building_ids for j in center_ids),
+                                               lowBound=0)
 
 # Hu
 roofs_height_center = p.LpVariable.dicts("roofs_height_center", ((j) for j in center_ids), lowBound=0)
@@ -92,7 +94,7 @@ def objective_function(Lp_prob, building_ids, center_ids):
         center_matrix[center_ids[index], building_ids[index]] for index in
         range(len(building_ids))) + (volume_change_weight * p.lpSum(
         delta_volumes_matrix)) + (roof_height_change_weight * p.lpSum(
-        delta_roofs_heights_matrix))
+        delta_roofs_volume_matrix))
 
 
 def printProb(Lp_prob):
@@ -150,15 +152,6 @@ def rooftypes(Lp_prob, center_ids, buiding_ids, roof_types):
                     roof_types[center_id] - roof_types[building_id]) <= epsilon_roof_type
             Lp_prob += center_matrix[center_id, building_id] * (
                     roof_types[center_id] - roof_types[building_id]) >= -epsilon_roof_type
-
-
-def roofvolumes(Lp_prob, center_ids, buiding_ids, roof_volumes):
-    for center_id in center_ids:
-        for building_id in building_ids:
-            Lp_prob += center_matrix[center_id, building_id] * (
-                    roof_volumes[center_id] - roof_volumes[building_id]) <= epsilon_roof_volume
-            Lp_prob += center_matrix[center_id, building_id] * (
-                    roof_volumes[center_id] - roof_volumes[building_id]) >= -epsilon_roof_volume
 
 
 def calculate_M_vo_volume(bld_nb, height, footprints):
@@ -235,19 +228,19 @@ def hard_height(Lp_prob, center_ids, buiding_ids, heights):
                     heights[center_id] - heights[building_id]) >= -epsilon_height
 
 
-def delta_h_roof_one_building_one_center(Lp_prob, building_id, center_id):
-    Lp_prob += delta_roofs_heights_matrix[center_id, building_id] >= (
-                roof_heights[building_id] - roofs_height_center[center_id]) - (
+def delta_v_roof_one_building_one_center(Lp_prob, building_id, center_id):
+    Lp_prob += delta_roofs_volume_matrix[center_id, building_id] >= (
+            roof_heights[building_id] - roofs_height_center[center_id]) * volume_parameter[building_id] - (
                        1 - center_matrix[center_id, building_id]) * MR[building_id]
-    Lp_prob += delta_roofs_heights_matrix[center_id, building_id] >= -(
-                roof_heights[building_id] - roofs_height_center[center_id]) - (
+    Lp_prob += delta_roofs_volume_matrix[center_id, building_id] >= -(
+            roof_heights[building_id] - roofs_height_center[center_id]) * volume_parameter[building_id] - (
                        1 - center_matrix[center_id, building_id]) * MR[building_id]
 
 
-def delta_h_roof(Lp_prob, building_ids, center_ids):
+def delta_v_roof(Lp_prob, building_ids, center_ids):
     for building_id in building_ids:
         for center_id in center_ids:
-            delta_h_roof_one_building_one_center(Lp_prob, building_id, center_id)
+            delta_v_roof_one_building_one_center(Lp_prob, building_id, center_id)
 
 
 def calculate_MR(bld_nb, height):
@@ -306,6 +299,15 @@ def hard_roof_height(Lp_prob, center_ids, buiding_ids, roof_heights):
                     roof_heights[center_id] - roof_heights[building_id]) >= -epsilon_roof_height
 
 
+def rooforientation(Lp_prob, center_ids, buiding_ids, roof_orientation):
+    for center_id in center_ids:
+        for building_id in building_ids:
+            Lp_prob += center_matrix[center_id, building_id] * (
+                    roof_orientation[center_id] - roof_orientation[building_id]) <= epsilon_roof_orientation
+            Lp_prob += center_matrix[center_id, building_id] * (
+                    roof_orientation[center_id] - roof_orientation[building_id]) >= -epsilon_roof_orientation
+
+
 M = calculate_M_vo_volume(edges, heights, footprints)
 MR = calculate_MR(edges, roof_heights)
 cb1(Lp_prob, building_ids, center_ids)
@@ -319,11 +321,11 @@ cf4(Lp_prob, building_ids, edges, positive_flows)
 # ch2(Lp_prob, center_ids, center_ids)
 # ch3(Lp_prob, center_ids, center_ids)
 rooftypes(Lp_prob, center_ids, building_ids, roof_types)
-roofvolumes(Lp_prob, center_ids, building_ids, roof_volumes)
 # cp1(Lp_prob,building_ids,center_ids)
 hard_height(Lp_prob, center_ids, building_ids, heights)
-delta_h_roof(Lp_prob, building_ids, center_ids)
+delta_v_roof(Lp_prob, building_ids, center_ids)
 hard_roof_height(Lp_prob, center_ids, building_ids, roof_heights)
+rooforientation(Lp_prob, center_ids, building_ids, roof_orientation)
 # result
 Lp_prob.solve()
 print(Lp_prob)
