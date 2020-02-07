@@ -16,9 +16,8 @@ edges = [('A', 'B'), ('B', 'A'), ('B', 'C'), ('C', 'B'), ('C', 'D'), ('D', 'C'),
 #         ['F', 'E'], ['F', 'G'], ['G', 'F'], ['G', 'H'], ['H', 'G']]  # edges
 
 roof_types = {'A': 1, 'B': 1, "C": 1, 'D': 1, 'E': 1, 'F': 1, 'G': 1, 'H': 1}  # R
-roof_volumes = {'A': 1, 'B': 1, "C": 1, 'D': 1, 'E': 1, 'F': 1, 'G': 1, 'H': 1}  # Vroof
 roof_heights = {'A': 0, 'B': 8, "C": 4, 'D': 2, 'E': 1, 'F': 1, 'G': 1, 'H': 1}
-volume_parameter = {'A': 1, 'B': 1, "C": 1, 'D': 1, 'E': 1, 'F': 1, 'G': 1, 'H': 1}
+roof_volume_constant = {'A': 1, 'B': 1, "C": 1, 'D': 1, 'E': 1, 'F': 1, 'G': 1, 'H': 1}
 roof_orientation = {'A': 1, 'B': 1, "C": 1, 'D': 1, 'E': 1, 'F': 1, 'G': 1, 'H': 1}
 
 volume_change_weight = 0.01  # W objective function
@@ -219,7 +218,7 @@ def cp1(Lp_prob, building_ids, center_ids):
             cp1_one_building_one_center(Lp_prob, building_id, center_id)
 
 
-def hard_height(Lp_prob, center_ids, buiding_ids, heights):
+def hard_body_height(Lp_prob, center_ids, buiding_ids, heights):
     for center_id in center_ids:
         for building_id in building_ids:
             Lp_prob += center_matrix[center_id, building_id] * (
@@ -230,10 +229,10 @@ def hard_height(Lp_prob, center_ids, buiding_ids, heights):
 
 def delta_v_roof_one_building_one_center(Lp_prob, building_id, center_id):
     Lp_prob += delta_roofs_volume_matrix[center_id, building_id] >= (
-            roof_heights[building_id] - roofs_height_center[center_id]) * volume_parameter[building_id] - (
+            roof_heights[building_id] - roofs_height_center[center_id]) * roof_volume_constant[building_id] - (
                        1 - center_matrix[center_id, building_id]) * MR[building_id]
     Lp_prob += delta_roofs_volume_matrix[center_id, building_id] >= -(
-            roof_heights[building_id] - roofs_height_center[center_id]) * volume_parameter[building_id] - (
+            roof_heights[building_id] - roofs_height_center[center_id]) * roof_volume_constant[building_id] - (
                        1 - center_matrix[center_id, building_id]) * MR[building_id]
 
 
@@ -322,7 +321,7 @@ cf4(Lp_prob, building_ids, edges, positive_flows)
 # ch3(Lp_prob, center_ids, center_ids)
 rooftypes(Lp_prob, center_ids, building_ids, roof_types)
 # cp1(Lp_prob,building_ids,center_ids)
-hard_height(Lp_prob, center_ids, building_ids, heights)
+hard_body_height(Lp_prob, center_ids, building_ids, heights)
 delta_v_roof(Lp_prob, building_ids, center_ids)
 hard_roof_height(Lp_prob, center_ids, building_ids, roof_heights)
 rooforientation(Lp_prob, center_ids, building_ids, roof_orientation)
