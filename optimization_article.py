@@ -57,6 +57,9 @@ roofs_height_center = p.LpVariable.dicts("roofs_height_center", ((j) for j in ce
 
 # --------------------------------------------------------------#
 # define constraints
+
+# --------------------------#
+# constraints for aggregates
 def cb1_one_building_id_all_center_ids(Lp_prob, building_id, center_ids):
     Lp_prob += p.lpSum(center_matrix[center_id, building_id] for center_id in center_ids) == 1
 
@@ -76,6 +79,8 @@ def cb2(Lp_prob, building_ids, center_ids):
             cb2_two_building_ids_one_center_id(Lp_prob, first_building_id, building_ids[index], center_ids[index])
 
 
+# --------------------------#
+# constraints for neighborhood
 def cf1(Lp_prob, edges, flows, positive_flows):
     for edge in edges:
         Lp_prob += building_count * positive_flows[edge] >= flows[edge]
@@ -106,6 +111,8 @@ def cf4(Lp_prob, building_ids, edges, positive_flows):
             positive_flows[edge] for edge in outcoming_edges) <= 1
 
 
+# --------------------------#
+# constraints for better visual view -depends on height of building
 def ch2(Lp_prob, center_ids, building_ids):
     for center_id in center_ids:
         for building_id in building_ids:
@@ -118,6 +125,8 @@ def ch3(Lp_prob, center_ids, building_ids):
             Lp_prob += center_matrix[center_id, building_id] * (heights[building_id] - height_center[center_id]) >= 0
 
 
+# --------------------------#
+# constraints for height of aggregated body of building
 def c_delta_V_one_building_one_center(Lp_prob, building_id, center_id):
     Lp_prob += delta_volumes_matrix[center_id, building_id] >= (heights[building_id] - height_center[center_id]) * \
                footprints[building_id] - (
@@ -133,6 +142,8 @@ def c_delta_V(Lp_prob, building_ids, center_ids):
             c_delta_V_one_building_one_center(Lp_prob, building_id, center_id)
 
 
+# --------------------------#
+# constraints aggregated buildings with similar or same roof (depends on epsilon_roof_type)
 def rooftypes(Lp_prob, center_ids, buiding_ids, roof_types):
     for center_id in center_ids:
         for building_id in building_ids:
@@ -142,6 +153,8 @@ def rooftypes(Lp_prob, center_ids, buiding_ids, roof_types):
                     roof_types[center_id] - roof_types[building_id]) >= -epsilon_roof_type
 
 
+# --------------------------#
+# constraints limiting aggregation of buildings which heights difference is bigger than epsilon_(roof)_height
 def hard_body_height(Lp_prob, center_ids, buiding_ids, heights):
     for center_id in center_ids:
         for building_id in building_ids:
@@ -160,6 +173,8 @@ def hard_roof_height(Lp_prob, center_ids, buiding_ids, roof_heights):
                     roof_heights[center_id] - roof_heights[building_id]) >= -epsilon_roof_height
 
 
+# --------------------------#
+# constraints for height of aggregated roof object of buildings
 def delta_v_roof_one_building_one_center(Lp_prob, building_id, center_id):
     Lp_prob += delta_roofs_volume_matrix[center_id, building_id] >= (
             roof_heights[building_id] - roofs_height_center[center_id]) * roof_volume_constant[building_id] - (
@@ -175,6 +190,8 @@ def delta_v_roof(Lp_prob, building_ids, center_ids):
             delta_v_roof_one_building_one_center(Lp_prob, building_id, center_id)
 
 
+# --------------------------#
+# constraints limiting aggregation if buildings which orientations difference is bigger than epsilon_roof_orientation
 def rooforientation(Lp_prob, center_ids, buiding_ids, roof_orientation):
     for center_id in center_ids:
         for building_id in building_ids:
