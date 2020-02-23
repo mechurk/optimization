@@ -63,7 +63,7 @@ delta_roofs_volume_matrix = p.LpVariable.dicts("delta_roofs_volume_matrix",
                                                lowBound=0)
 
 # HRu
-roofs_height_center = p.LpVariable.dicts("roofs_height_center", ((j) for j in center_ids), lowBound=0)
+height_roof_center = p.LpVariable.dicts("height_roof_center", ((j) for j in center_ids), lowBound=0)
 
 
 # --------------------------------------------------------------#
@@ -188,10 +188,10 @@ def hard_roof_height(Lp_prob, center_ids, buiding_ids, roof_heights):
 # constraints for height of aggregated roof object of buildings
 def delta_v_roof_one_building_one_center(Lp_prob, building_id, center_id):
     Lp_prob += delta_roofs_volume_matrix[center_id, building_id] >= (
-            roof_heights[building_id] - roofs_height_center[center_id]) * roof_volume_constant[building_id] - (
+            roof_heights[building_id] - height_roof_center[center_id]) * roof_volume_constant[building_id] - (
                        1 - center_matrix[center_id, building_id]) * MR[building_id]
     Lp_prob += delta_roofs_volume_matrix[center_id, building_id] >= -(
-            roof_heights[building_id] - roofs_height_center[center_id]) * roof_volume_constant[building_id] - (
+            roof_heights[building_id] - height_roof_center[center_id]) * roof_volume_constant[building_id] - (
                        1 - center_matrix[center_id, building_id]) * MR[building_id]
 
 
