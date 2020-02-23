@@ -28,6 +28,7 @@ roof_heights= {'695579e4-2cce-44fb-b613-ee8eec5dcdf2': 0, '57f6f188-4668-44f7-83
 roof_volume_constant= {'695579e4-2cce-44fb-b613-ee8eec5dcdf2': 0, '57f6f188-4668-44f7-8321-1cad15547544': 0, '0e09ee42-5d0a-4787-8e33-4c1763561d3c': 0, 'b73b03e6-9b14-4dab-9a12-c22a8728e43e': 24.858666615954988, 'b0b8f62e-f3ae-4332-ba2e-b7a17b89ddda': 9.711866646854475, 'ee1629f1-c492-4199-8dfa-f9f350cab517': 16.421999966499104, '3acaf0bd-02a6-4e70-8118-55774ed9878e': 13.066199973344949, '01cdbd77-6b90-4d6d-b56c-12c0be103d3c': 0, 'fac65978-11e1-472f-bcb3-b34589e1eb1b': 15.427499968527895, '287656ae-ee2b-4c7c-89d1-cef38cbed432': 4.7366666570038705, 'e26814de-1d67-483a-a20e-48241767b44c': 21.647699955838707, 'd94dbd08-6576-449d-b2bb-4798836999d3': 0, '1b4cef2d-8b82-47de-aa0c-f09562a32b0d': 0, 'e1f5f600-b6ce-4fb9-8079-7865e78eec2d': 22.42199995425913, '8e553652-d60a-4045-968a-0f046bbc048a': 0, '27fe06e5-ce2e-4745-b9b9-60128ad3f11c': 0}
 roof_orientation= {'695579e4-2cce-44fb-b613-ee8eec5dcdf2': 0, '57f6f188-4668-44f7-8321-1cad15547544': 0, '0e09ee42-5d0a-4787-8e33-4c1763561d3c': 0, 'b73b03e6-9b14-4dab-9a12-c22a8728e43e': 90, 'b0b8f62e-f3ae-4332-ba2e-b7a17b89ddda': 0, 'ee1629f1-c492-4199-8dfa-f9f350cab517': 0, '3acaf0bd-02a6-4e70-8118-55774ed9878e': 0, '01cdbd77-6b90-4d6d-b56c-12c0be103d3c': 0, 'fac65978-11e1-472f-bcb3-b34589e1eb1b': 270, '287656ae-ee2b-4c7c-89d1-cef38cbed432': 0, 'e26814de-1d67-483a-a20e-48241767b44c': 270, 'd94dbd08-6576-449d-b2bb-4798836999d3': 0, '1b4cef2d-8b82-47de-aa0c-f09562a32b0d': 0, 'e1f5f600-b6ce-4fb9-8079-7865e78eec2d': 270, '8e553652-d60a-4045-968a-0f046bbc048a': 0, '27fe06e5-ce2e-4745-b9b9-60128ad3f11c': 0}
 center_ids = building_ids
+
 # --------------------------------------------------------------#
 # variable parameters
 body_volume_change_weight = 0.01  # WB objective function
@@ -281,10 +282,24 @@ def calculate_M_vo_volume(bld_nb, height, footprints):
 # --------------------------------------------------------------#
 # print solved variables
 def printProb(Lp_prob):
+    solution ={}
     for v in Lp_prob.variables():
         print(v.name, "=", v.varValue)
-    print("Status:", p.LpStatus[Lp_prob.status])
+        solution[v.name] = v.varValue
 
+    print("Status:", p.LpStatus[Lp_prob.status])
+    print (solution)
+
+# print solved variables
+def create_txt_solution(Lp_prob):
+    solution ={}
+    file=open("solution.txt","w")
+    for v in Lp_prob.variables():
+        solve = str(v.name) + " = " + str(v.varValue)
+        file.write(str(solve))
+        file.write("\n")
+
+    file.close()
 
 # calculate MR and MB
 MB = calculate_M_vo_volume(edges, heights, footprints)
@@ -311,6 +326,7 @@ objective_function(Lp_prob, building_ids, center_ids)
 
 # result, print
 Lp_prob.solve()
-print(Lp_prob)
+#print(Lp_prob)
 printProb(Lp_prob)
 print(p.value(Lp_prob.objective))
+create_txt_solution(Lp_prob)
