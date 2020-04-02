@@ -47,10 +47,11 @@ for i in edges1:
     new_tuple = (i)
     edges.append(tuple(i))
 
+
 # --------------------------------------------------------------#
 # variable parameters
-body_volume_change_weight = 0.001  # WB objective function
-roof_volume_change_weight = 0.001  # WR objective function
+body_volume_change_weight = 0.01  # WB objective function
+roof_volume_change_weight = 0.01  # WR objective function
 building_count = len(building_ids)  # M cf1, cf2
 epsilon_roof_type = 0
 epsilon_roof_orientation = 0
