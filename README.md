@@ -1,8 +1,8 @@
 # Optimization
 
-Second part (2/3) of practical part diploma thesis: Generalization of 3D spatial data models (2020).
+Second practical part (2/3) of Master's thesis: Generalization of 3D spatial data models (2020).
 
-Script serves as solver of optimization problem of aggregation LOD2 building blocks. 
+Script serves as a solver of optimization problem of aggregation LOD2 building blocks. 
 
 
 ## System requirements
