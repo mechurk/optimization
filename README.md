@@ -2,18 +2,18 @@
 
 Second part (2/3) of practical part diploma thesis: Generalization of 3D spatial data models (2020).
 
-Script serves as solver of optimizization problem of aggregation LOD2 building blocks. 
+Script serves as solver of optimization problem of aggregation LOD2 building blocks. 
 
 
 ## System requirements
 
 Python packages:
 
-* Pulp
-* Networkx
-* Json
-* Sys
-* Time
+* pulp
+* networkx
+* json
+* sys
+* time
 
 
 Skript works in Python 3 
